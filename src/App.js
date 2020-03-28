@@ -11,46 +11,18 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tasks : [] //id, name, status
+            tasks : null //id, name, status
             ,isDisplayForm: false
         };
     }
 
-    componentWillMount(){
+    UNSAFE_componentWillMount(){
       if (localStorage && localStorage.getItem('tasks')) {
          var tasks = JSON.parse(localStorage.getItem('tasks'));
          this.setState({
             tasks : tasks
          });
       }
-    }
-
-    onGenerateData = () => {
-      var tasks = [
-            {
-              id: randomstring.generate(),
-              name: 'di lam',
-              status: false
-            },
-            {
-              id: randomstring.generate(),
-              name: 'doc sach',
-              status: false
-            },
-            {
-              id: randomstring.generate(),
-              name: 'an com',
-              status: true
-            }
-      ];
-      console.log(tasks)
-
-      this.setState({
-        tasks: tasks
-      });
-
-      //save data to localStorage
-      localStorage.setItem('tasks',JSON.stringify(tasks));
     }
 
     onToggleForm = () => {
@@ -61,13 +33,46 @@ class App extends Component {
 
     onCloseForm = () => {
       this.setState({
-        isDisplayForm: !this.state.isDisplayForm
+        isDisplayForm: false
       });
     }
 
+    onSubmit = (addTask) => {
+      var {tasks} = this.state;
+      addTask.id = randomstring.generate();
+      tasks.push(addTask);
+      this.setState({
+        tasks: tasks
+      });
+      localStorage.setItem('tasks',JSON.stringify(tasks))
+    }
+
+    // findIndex = (id) => {
+    //   var {tasks} = this.state;
+    //   tasks.forEach((task, index) => {
+    //     if (task.id === id) {
+    //       return index;
+    //     }
+    //     return -1;
+    //   }); 
+    // }
+
+    // onDelete = (id) => {
+    //   var {tasks} = this.state;
+    //   var index = this.findIndex(id);
+    //   if (index!== -1) {
+    //     tasks.splice(index,1);
+    //     this.setState({
+    //       tasks : tasks
+    //     });
+    //     localStorage.setItem('tasks',JSON.stringify(tasks));
+    //   }
+    //   this.onCloseForm();
+    // } 
+
   render(){
     var {tasks, isDisplayForm} = this.state;
-    var elmTaskForm = isDisplayForm ? <TaskForm onCloseForm = {this.onCloseForm}/> : '';
+    var elmTaskForm = isDisplayForm ? <TaskForm onSubmit={this.onSubmit} onCloseForm = {this.onCloseForm}/> : '';
     return (
       <div className="container-fluid">
           <div className="text-center">
@@ -85,17 +90,12 @@ class App extends Component {
                     <span className="fa fa-plus mr-5"></span>Thêm Công Việc
                 </button>
 
-                <button type="button" 
-                        className="btn btn-danger ml-5"
-                        onClick={ this.onGenerateData }>
-                    Generate id data
-                </button>
-
                 {/*Search-Sort*/} 
                 <Control/>
 
                 <div className="row mt-15">
-                    <TaskList tasks = { tasks }/>
+                    <TaskList tasks = { tasks }
+                              onDelete={this.onDelete}/>
                 </div>
             </div>
           </div>
