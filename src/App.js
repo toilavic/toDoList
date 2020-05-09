@@ -47,28 +47,42 @@ class App extends Component {
       localStorage.setItem('tasks',JSON.stringify(tasks))
     }
 
-    // findIndex = (id) => {
-    //   var {tasks} = this.state;
-    //   tasks.forEach((task, index) => {
-    //     if (task.id === id) {
-    //       return index;
-    //     }
-    //     return -1;
-    //   }); 
-    // }
+    onUpdateStatus = (id) => {
+      var {tasks} = this.state;
+      var index = this.findIndex(id);
+      console.log(index);
+      if (index !== -1) {
+        tasks[index].status = !tasks[index].status;
+        this.setState({
+          tasks : tasks
+        });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+      }
+    }
 
-    // onDelete = (id) => {
-    //   var {tasks} = this.state;
-    //   var index = this.findIndex(id);
-    //   if (index!== -1) {
-    //     tasks.splice(index,1);
-    //     this.setState({
-    //       tasks : tasks
-    //     });
-    //     localStorage.setItem('tasks',JSON.stringify(tasks));
-    //   }
-    //   this.onCloseForm();
-    // } 
+    findIndex = (id) => {
+      var {tasks} = this.state;
+      var resultIndex = -1;
+      tasks.forEach((task, index) => {
+        if (task.id === id) {
+          resultIndex = index;
+        }
+      });
+      return resultIndex; 
+    }
+
+    onDelete = (id) => {
+      var {tasks} = this.state;
+      var index = this.findIndex(id);
+      if (index!== -1) {
+        tasks.splice(index,1);
+        this.setState({
+          tasks : tasks
+        });
+        localStorage.setItem('tasks',JSON.stringify(tasks));
+      }
+      this.onCloseForm();
+    } 
 
   render(){
     var {tasks, isDisplayForm} = this.state;
@@ -76,10 +90,10 @@ class App extends Component {
     return (
       <div className="container-fluid">
           <div className="text-center">
-              <h1>Quản lý công việc</h1> <hr/>
+              <h1>To do list</h1> <hr/>
           </div>
           <div className="row">
-              <div className={isDisplayForm ? "col-xs-4 col-sm-4 col-md-4 col-lg-4" : ""}>
+              <div className={isDisplayForm ? "col-xs-4 col-sm-4 col-md-4 col-lg-3" : ""}>
                 {/*form*/} 
                   {elmTaskForm}
               </div>
@@ -87,7 +101,7 @@ class App extends Component {
                 <button type="button" 
                         className="btn btn-primary"
                         onClick={this.onToggleForm}>
-                    <span className="fa fa-plus mr-5"></span>Thêm Công Việc
+                    <span className="fa fa-plus mr-5"></span>Add a new task
                 </button>
 
                 {/*Search-Sort*/} 
@@ -95,7 +109,8 @@ class App extends Component {
 
                 <div className="row mt-15">
                     <TaskList tasks = { tasks }
-                              onDelete={this.onDelete}/>
+                              onDelete={this.onDelete}
+                              onUpdateStatus={this.onUpdateStatus}/>
                 </div>
             </div>
           </div>

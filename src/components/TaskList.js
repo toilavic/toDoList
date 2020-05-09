@@ -7,17 +7,18 @@ class TaskList extends Component {
         return <TaskItem key={task.id} 
                         index = {index} 
                         task = {task}
-                        onDelete={this.props.onDelete}/>
+                        onDelete={this.props.onDelete}
+                        onUpdateStatus={this.props.onUpdateStatus}/>
     });
     return (
  	<div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <table className="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th className="text-center">STT</th>
-                                <th className="text-center">Tên</th>
-                                <th className="text-center">Trạng Thái</th>
-                                <th className="text-center">Hành Động</th>
+                                <th className="text-center">ID</th>
+                                <th className="text-center">Task</th>
+                                <th className="text-center">Status</th>
+                                <th className="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -28,9 +29,9 @@ class TaskList extends Component {
                                 </td>
                                 <td>
                                     <select className="form-control">
-                                        <option value="-1">Tất Cả</option>
-                                        <option value="0">Ẩn</option>
-                                        <option value="1">Kích Hoạt</option>
+                                        <option value="-1">All</option>
+                                        <option value="0">De-active</option>
+                                        <option value="1">Active</option>
                                     </select>
                                 </td>
                                 <td></td>

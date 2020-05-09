@@ -5,10 +5,10 @@ class Search extends Component {
     return (
 	     	<div className="col-xs-6 col-sm-6 col-md-6 col-lg-6">
 	                        <div className="input-group">
-	                            <input type="text" className="form-control" placeholder="Nhập từ khóa..." />
+	                            <input type="text" className="form-control" placeholder="Find a task..." />
 	                            <span className="input-group-btn">
 	                                        <button className="btn btn-primary" type="button">
-	                                            <span className="fa fa-search mr-5"></span>Tìm
+	                                            <span className="fa fa-search mr-5"></span>Search
 	                            </button>
 	                            </span>
 	                        </div>
