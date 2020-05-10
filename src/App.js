@@ -13,6 +13,7 @@ class App extends Component {
         this.state = {
             tasks : null //id, name, status
             ,isDisplayForm: false
+            ,taskEditing : null
         };
     }
 
@@ -39,10 +40,16 @@ class App extends Component {
 
     onSubmit = (addTask) => {
       var {tasks} = this.state;
-      addTask.id = randomstring.generate();
-      tasks.push(addTask);
+      if (addTask.id === "") {
+          addTask.id = randomstring.generate();
+          tasks.push(addTask);
+      } else {
+        var index = this.findIndex(addTask.id);
+        tasks[index] = addTask;
+      }
       this.setState({
         tasks: tasks
+        ,taskEditing : null
       });
       localStorage.setItem('tasks',JSON.stringify(tasks))
     }
@@ -84,9 +91,27 @@ class App extends Component {
       this.onCloseForm();
     } 
 
+    onUpdate = (id) => {
+      var {tasks} = this.state;
+      var index = this.findIndex(id);
+      var taskEditing = tasks[index];
+      this.setState({
+          taskEditing : taskEditing
+      });
+      this.onShowForm();
+    }
+
+    onShowForm = () => {
+      this.setState({
+        isDisplayForm: true
+      });
+    }
+
   render(){
-    var {tasks, isDisplayForm} = this.state;
-    var elmTaskForm = isDisplayForm ? <TaskForm onSubmit={this.onSubmit} onCloseForm = {this.onCloseForm}/> : '';
+    var {tasks, isDisplayForm, taskEditing} = this.state;
+    var elmTaskForm = isDisplayForm ? <TaskForm onSubmit={this.onSubmit}
+                                                onCloseForm = {this.onCloseForm}
+                                                task = {taskEditing}/> : '';
     return (
       <div className="container-fluid">
           <div className="text-center">
@@ -110,7 +135,8 @@ class App extends Component {
                 <div className="row mt-15">
                     <TaskList tasks = { tasks }
                               onDelete={this.onDelete}
-                              onUpdateStatus={this.onUpdateStatus}/>
+                              onUpdateStatus={this.onUpdateStatus}
+                              onUpdate = {this.onUpdate}/>
                 </div>
             </div>
           </div>

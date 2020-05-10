@@ -8,7 +8,8 @@ class TaskList extends Component {
                         index = {index} 
                         task = {task}
                         onDelete={this.props.onDelete}
-                        onUpdateStatus={this.props.onUpdateStatus}/>
+                        onUpdateStatus={this.props.onUpdateStatus}
+                        onUpdate = {this.props.onUpdate}/>
     });
     return (
  	<div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">

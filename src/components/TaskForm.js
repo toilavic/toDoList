@@ -4,13 +4,27 @@ class TaskForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            id : '',
             name: null,
             status: false
         };
     }
 
+    UNSAFE_componentWillMount() {
+      if(this.props.task) {
+        this.setState({
+            id : this.props.task.id
+            ,name: this.props.task.name
+            ,status: this.props.task.status
+        });
+      }
+    }
+
     onCloseForm = () => {
         this.props.onCloseForm();
+        this.setState({
+            id : ''
+        });
     }
 
     onChange = (event) => {
@@ -35,8 +49,9 @@ class TaskForm extends Component {
 
     onClear = () => {
         this.setState({
-            name: '',
-            status: false
+            id : ''
+            ,name: ''
+            ,status: false
         });
     }
 
@@ -44,8 +59,9 @@ class TaskForm extends Component {
     return (
       <div className="panel panel-warning">
                     <div className="panel-heading">
-                      <h3 className="panel-title">Add a new task
+                      <h3 className="panel-title"> {this.state.id ? "Edit task" : "Add a new task"}
                         <span className="fa fa-times-circle text-right fl"
+                                onClick={this.onCloseForm}
                          ></span>
                       </h3>
                     </div>
@@ -55,7 +71,7 @@ class TaskForm extends Component {
                                 <label>Name :</label>
                                 <input type="text" className="form-control"
                                         name= "name"
-                                        value= {this.state.name}
+                                        value= {this.state.name || ""}
                                         onChange={this.onChange} />
                             </div>
                             <label>Status :</label>
