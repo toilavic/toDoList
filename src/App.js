@@ -11,9 +11,18 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tasks : null //id, name, status
+            tasks : [] //id, name, status
             ,isDisplayForm: false
-            ,taskEditing : null
+            ,taskEditing : null,
+            filter: {
+              name : ''
+             ,status : -1 
+            }
+            ,keyword : ''
+            ,sort : {
+              name : ''
+              ,value : ''
+            }
         };
     }
 
@@ -27,14 +36,23 @@ class App extends Component {
     }
 
     onToggleForm = () => {
-      this.setState({
-          isDisplayForm: true
-      });
+      if (this.state.isDisplayForm && this.state.taskEditing !== null) {
+        this.setState({
+            isDisplayForm: true,
+            taskEditing : null
+        });
+      } else {
+        this.setState({
+            isDisplayForm: !this.state.isDisplayForm
+            ,taskEditing : null
+        });
+      }
     }
 
     onCloseForm = () => {
       this.setState({
-        isDisplayForm: false
+        isDisplayForm: false,
+        taskEditing: null
       });
     }
 
@@ -95,6 +113,7 @@ class App extends Component {
       var {tasks} = this.state;
       var index = this.findIndex(id);
       var taskEditing = tasks[index];
+      
       this.setState({
           taskEditing : taskEditing
       });
@@ -107,8 +126,75 @@ class App extends Component {
       });
     }
 
+    onFilter = (filterName, filterStatus) => {
+      filterStatus = +filterStatus; //string to number
+      this.setState({
+        filter : {
+          name : filterName.toLowerCase()
+          ,status : filterStatus
+        }
+      });
+    }
+
+    onSearch = (keyword) => {
+      this.setState({
+        keyword : keyword
+      });
+    }
+
+    onSort = async (name, val) => {
+        await this.setState({
+            sort: {
+                name: name,
+                value: val
+            }
+        });
+        console.log(this.state.sort)
+    }
+
   render(){
-    var {tasks, isDisplayForm, taskEditing} = this.state;
+
+    var {tasks, isDisplayForm, taskEditing, filter, keyword, sort} = this.state; 
+    // 'same AJAX' find task
+    if (filter)
+    {
+      if (filter.name) {
+        tasks = tasks.filter((task) => {
+          return task.name.toLowerCase().indexOf(filter.name) !== -1;
+        });
+      }
+      
+      tasks = tasks.filter((task) => {
+          if (filter.status === -1) {
+            return task;
+          } 
+          else
+          {
+            return task.status === (filter.status === 1 ? true : false); 
+          }
+        });
+      }
+      // search
+      if(keyword) {
+        tasks = tasks.filter((task) => {
+          return task.name.toLowerCase().indexOf(keyword) !== -1;
+        });
+      }
+      // sort
+      if(sort.name === 'name') {
+        tasks.sort((a,b) => {
+          if (a.name > b.name) return sort.value;
+          else if (a.name < b.name) return -sort.value;
+          else return 0;
+        });
+      } else {
+        tasks.sort((a,b) => {
+          if (a.status > b.status) return -sort.value;
+          else if (a.status < b.status) return sort.value;
+          else return 0;
+        });
+      }
+    
     var elmTaskForm = isDisplayForm ? <TaskForm onSubmit={this.onSubmit}
                                                 onCloseForm = {this.onCloseForm}
                                                 task = {taskEditing}/> : '';
@@ -130,13 +216,15 @@ class App extends Component {
                 </button>
 
                 {/*Search-Sort*/} 
-                <Control/>
+                <Control onSearch = {this.onSearch}
+                         onSort = {this.onSort}/>
 
                 <div className="row mt-15">
                     <TaskList tasks = { tasks }
                               onDelete={this.onDelete}
                               onUpdateStatus={this.onUpdateStatus}
-                              onUpdate = {this.onUpdate}/>
+                              onUpdate = {this.onUpdate}
+                              onFilter = {this.onFilter}/>
                 </div>
             </div>
           </div>
