@@ -3,6 +3,10 @@ import './App.css';
 import TaskForm from './components/TaskForm'
 import Control from './components/Control'
 import TaskList from './components/TaskList'
+import _ from 'lodash';
+import demo from './training/demo';
+import { connect } from 'react-redux';
+import * as actions from './actions/index'
 var randomstring = require("randomstring");
 //install random string value 
 
@@ -11,9 +15,8 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            tasks : [] //id, name, status
-            ,isDisplayForm: false
-            ,taskEditing : null,
+            // tasks : [] //id, name, status
+            taskEditing : null,
             filter: {
               name : ''
              ,status : -1 
@@ -26,35 +29,36 @@ class App extends Component {
         };
     }
 
-    UNSAFE_componentWillMount(){
-      if (localStorage && localStorage.getItem('tasks')) {
-         var tasks = JSON.parse(localStorage.getItem('tasks'));
-         this.setState({
-            tasks : tasks
-         });
-      }
-    }
+    // UNSAFE_componentWillMount(){
+    //   if (localStorage && localStorage.getItem('tasks')) {
+    //      var tasks = JSON.parse(localStorage.getItem('tasks'));
+    //      this.setState({
+    //         tasks : tasks
+    //      });
+    //   }
+    // }
 
     onToggleForm = () => {
-      if (this.state.isDisplayForm && this.state.taskEditing !== null) {
-        this.setState({
-            isDisplayForm: true,
-            taskEditing : null
-        });
-      } else {
-        this.setState({
-            isDisplayForm: !this.state.isDisplayForm
-            ,taskEditing : null
-        });
-      }
+      // if (this.state.isDisplayForm && this.state.taskEditing !== null) {
+      //   this.setState({
+      //       isDisplayForm: true,
+      //       taskEditing : null
+      //   });
+      // } else {
+      //   this.setState({
+      //       isDisplayForm: !this.state.isDisplayForm
+      //       ,taskEditing : null
+      //   });
+      // }
+      this.props.onToggleForm();
     }
 
-    onCloseForm = () => {
-      this.setState({
-        isDisplayForm: false,
-        taskEditing: null
-      });
-    }
+    // onCloseForm = () => {
+    //   this.setState({
+    //     isDisplayForm: false,
+    //     taskEditing: null
+    //   });
+    // }
 
     onSubmit = (addTask) => {
       var {tasks} = this.state;
@@ -154,49 +158,51 @@ class App extends Component {
 
   render(){
 
-    var {tasks, isDisplayForm, taskEditing, filter, keyword, sort} = this.state; 
+    var { taskEditing, filter, keyword, sort} = this.state; 
+
+    var { isDisplayForm } = this.props;
+
     // 'same AJAX' find task
     if (filter)
     {
-      if (filter.name) {
-        tasks = tasks.filter((task) => {
-          return task.name.toLowerCase().indexOf(filter.name) !== -1;
-        });
-      }
+      // if (filter.name) {
+      //   tasks = tasks.filter((task) => {
+      //     return task.name.toLowerCase().indexOf(filter.name) !== -1;
+      //   });
+      // }
       
-      tasks = tasks.filter((task) => {
-          if (filter.status === -1) {
-            return task;
-          } 
-          else
-          {
-            return task.status === (filter.status === 1 ? true : false); 
-          }
-        });
-      }
+      // tasks = tasks.filter((task) => {
+      //     if (filter.status === -1) {
+      //       return task;
+      //     } 
+      //     else
+      //     {
+      //       return task.status === (filter.status === 1 ? true : false); 
+      //     }
+      //   });
+      } 
       // search
-      if(keyword) {
-        tasks = tasks.filter((task) => {
-          return task.name.toLowerCase().indexOf(keyword) !== -1;
-        });
-      }
-      // sort
-      if(sort.name === 'name') {
-        tasks.sort((a,b) => {
-          if (a.name > b.name) return sort.value;
-          else if (a.name < b.name) return -sort.value;
-          else return 0;
-        });
-      } else {
-        tasks.sort((a,b) => {
-          if (a.status > b.status) return -sort.value;
-          else if (a.status < b.status) return sort.value;
-          else return 0;
-        });
-      }
+      // if(keyword) {
+      //   tasks = tasks.filter((task) => {
+      //     return task.name.toLowerCase().indexOf(keyword) !== -1;
+      //   });
+      // }
+      // // sort
+      // if(sort.name === 'name') {
+      //   tasks.sort((a,b) => {
+      //     if (a.name > b.name) return sort.value;
+      //     else if (a.name < b.name) return -sort.value;
+      //     else return 0;
+      //   });
+      // } else {
+      //   tasks.sort((a,b) => {
+      //     if (a.status > b.status) return -sort.value;
+      //     else if (a.status < b.status) return sort.value;
+      //     else return 0;
+      //   });
+      // }
     
     var elmTaskForm = isDisplayForm ? <TaskForm onSubmit={this.onSubmit}
-                                                onCloseForm = {this.onCloseForm}
                                                 task = {taskEditing}/> : '';
     return (
       <div className="container-fluid">
@@ -220,7 +226,7 @@ class App extends Component {
                          onSort = {this.onSort}/>
 
                 <div className="row mt-15">
-                    <TaskList tasks = { tasks }
+                    <TaskList 
                               onDelete={this.onDelete}
                               onUpdateStatus={this.onUpdateStatus}
                               onUpdate = {this.onUpdate}
@@ -232,4 +238,18 @@ class App extends Component {
     );
   }
 }
-export default App;
+
+const mapStateToProps = state => {
+    return {
+      isDisplayForm : state.isDisplayForm
+    };
+};
+
+const mapDispatchToProps = (dispatch, props) => {
+  return {
+      onToggleForm : () => {
+        dispatch(actions.toggleForm());
+      }
+  };
+}; 
+export default connect(mapStateToProps, mapDispatchToProps)(App);
