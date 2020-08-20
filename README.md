@@ -1,4 +1,4 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[To do list tool](https://todolist-project2020.herokuapp.com/).
 
 ## Available Scripts
 
